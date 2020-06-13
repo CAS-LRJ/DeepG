@@ -81,6 +81,18 @@ def main():
     parser.add_argument('--use_area_heuristic', type=str2bool, default=True,  help='whether to use area heuristic for the DeepPoly ReLU approximation')
     args = parser.parse_args()
 
+    #LRJ add
+    deepsymbol_input_folder=args.data_dir+'/Batch_Input_DeepG'
+    #print(deepsymbol_input_folder)
+    if not os.path.exists(deepsymbol_input_folder):
+        os.makedirs(deepsymbol_input_folder)
+    else:
+        for root,dirs,files in os.walk(deepsymbol_input_folder):
+            for name in files:
+                if name.endswith('.in'):
+                    os.remove(os.path.join(root,name))
+                    #print("delete "+os.path.join(root,name))
+
     global n_rows, n_cols, n_channels
     if args.dataset == 'cifar10':
         n_rows, n_cols, n_channels = 32, 32, 3
@@ -134,6 +146,9 @@ def main():
         if args.num_tests is not None and i >= args.num_tests:
             break
         print('Test {}:'.format(i))
+
+        #LRJ add
+        current_test = i
         
         if args.dataset == 'mnist' or args.dataset == 'fashion':
             image = np.float64(test[1:len(test)])
@@ -199,6 +214,9 @@ def main():
                         attack_pass += 1
         print('tot attacks: ', len(attack_imgs))
         specs_file = os.path.join(args.data_dir, '{}.csv'.format(i))
+        #LRJ add
+        spec_lb_all=[]
+        spec_ub_all=[]
         begtime = time.time()
         with open(specs_file, 'r') as fin:
             lines = fin.readlines()
@@ -228,6 +246,8 @@ def main():
                 elif i % k == args.num_params:
                     # read interval bounds for image pixels
                     values = np.array(list(map(float, line[:-1].split(','))))
+                    #print(values)
+                    #print(len(values))
                     spec_lb[:dim] = values[::2]
                     spec_ub[:dim] = values[1::2]
                     # if args.debug:
@@ -262,6 +282,18 @@ def main():
                         for l in range(args.num_params):
                             uexpr_weights.append(0)
                             uexpr_dim.append(dim + l)
+                    #LRJ Add Data beform normalize
+                    if len(spec_lb_all):
+                        spec_lb_all=np.minimum(spec_lb_all,spec_lb[:dim])
+                    else:
+                        spec_lb_all=list(spec_lb[:dim])
+
+                    if len(spec_ub_all):
+                        spec_ub_all=np.maximum(spec_ub_all,spec_ub[:dim])
+                    else:
+                        spec_ub_all=list(spec_ub[:dim])
+                    #print(spec_lb_all)
+
                     if(is_trained_with_pytorch):
                         normalize(spec_lb[:dim], means, stds, args.dataset, is_conv)
                         normalize(spec_ub[:dim], means, stds, args.dataset, is_conv)
@@ -293,6 +325,17 @@ def main():
                         spec_lb[:dim], spec_ub[:dim], 'deeppoly',
                         args.timeout_lp, args.timeout_milp, args.use_area_heuristic, 0)
                     t_end = time.time()
+                    #LRJ add normalized data below
+                    #print(spec_lb[:dim])
+                    #if len(spec_lb_all):
+                    #    spec_lb_all=np.minimum(spec_lb_all,spec_lb[:dim])
+                    #else:
+                    #    spec_lb_all=spec_lb[:dim]
+
+                    #if len(spec_ub_all):
+                    #    spec_ub_all=np.maximum(spec_ub_all,spec_ub[:dim])
+                    #else:
+                    #    spec_ub_all=spec_ub[:dim]
 
                     print('DeepG: ', perturbed_label_poly, '\tInterval: ', perturbed_label_box, '\tlabel: ', label, '[Time: %.4f]' % (t_end - t_begin))
 
@@ -310,6 +353,14 @@ def main():
                     lexpr_cst, uexpr_cst = [], []
                     lexpr_weights, uexpr_weights = [], []
                     lexpr_dim, uexpr_dim = [], []
+        #LRJ add
+        #print(len(spec_lb_all))
+        #print(len(spec_ub_all))
+        in_file = os.path.join(deepsymbol_input_folder, 'in_{}.in'.format(current_test))
+        fp=open(in_file,"w")
+        for index in range(len(spec_lb_all)):
+            fp.write(str(spec_lb_all[index])+' '+str(spec_ub_all[index])+'\n')
+        fp.close()
 
         total += 1
         if ok_box:
