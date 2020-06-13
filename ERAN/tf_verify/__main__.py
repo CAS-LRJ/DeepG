@@ -9,7 +9,7 @@ import csv
 import time
 from deepzono_milp import * 
 import argparse
-
+from hasse import hasse
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
@@ -41,8 +41,12 @@ parser.add_argument('--complete', type=str2bool, default=False,  help='flag spec
 parser.add_argument('--timeout_lp', type=float, default=1,  help='timeout for the LP solver')
 parser.add_argument('--timeout_milp', type=float, default=1,  help='timeout for the MILP solver')
 parser.add_argument('--use_area_heuristic', type=str2bool, default=True,  help='whether to use area heuristic for the DeepPoly ReLU approximation')
+parser.add_argument('--relation_diagram', type=str, default=None, help='Path to the hasse diagram of variables constraintables in the output layer')
+parser.add_argument('--input', type=str, default=None, help='Path to the input of the network')
 
 args = parser.parse_args()
+
+hasse.relation_diagram = args.relation_diagram
 
 #if len(sys.argv) < 4 or len(sys.argv) > 5:
 #    print('usage: python3.6 netname epsilon domain dataset')
@@ -178,7 +182,11 @@ def denormalize(image, means, stds):
                 count = count+1
         
 
-if(dataset=='mnist'):
+if(args.input):
+    raw = open(args.input, 'r').read().strip().replace("\n"," ").split(" ")
+    test = [0] + [int(i) for i in raw]
+    tests = [test]
+elif(dataset=='mnist'):
     csvfile = open('../data/mnist_test.csv', 'r') 
     tests = csv.reader(csvfile, delimiter=',')
 elif(dataset=='cifar10'):
@@ -248,6 +256,7 @@ if dataset=='acasxu':
 
 else:
     for test in tests:
+        print(test)
         if(dataset=='mnist'):
             image= np.float64(test[1:len(test)])/np.float64(255)
         else:
@@ -278,6 +287,7 @@ else:
                     
         #print("concrete ", nlb[len(nlb)-1])
         #if(label == int(test[0])):
+        test[0] = label
         if(label == int(test[0])):
             if(dataset=='mnist'):   
                 specLB = np.clip(image - epsilon,0,1)

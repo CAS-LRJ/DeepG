@@ -9,6 +9,7 @@ from deeppoly_nodes import *
 from deepzono_nodes import *
 from functools import reduce
 import ctypes
+from hasse import hasse
 
 class layers:
     def __init__(self):
@@ -100,7 +101,21 @@ class Analyzer:
         #for i in range(output_size):
         #    print("inf", bounds[i].contents.inf.contents.val.dbl, "sup", bounds[i].contents.sup.contents.val.dbl)
         #elina_interval_array_free(bounds,output_size)
-    
+
+        if hasse.relation_diagram:
+            edges = [ [] for i in range(output_size)]
+            for i in range(output_size):
+                for j in range(output_size):
+                    if i != j :
+                        le = not (self.is_greater(self.man, element, i, j, self.use_area_heuristic))
+                        print("{} < {} : {}".format(i, j, le))
+                        if le :
+                            edges[i].append(j)
+            
+            json = hasse.dumpJSON(output_size,hasse.hasse(output_size,edges))
+            file = open(hasse.relation_diagram,'w')
+            file.write(json)
+
         dominant_class = -1
         if self.specnumber==0:
             for i in range(output_size):
