@@ -43,6 +43,7 @@ parser.add_argument('--timeout_milp', type=float, default=1,  help='timeout for 
 parser.add_argument('--use_area_heuristic', type=str2bool, default=True,  help='whether to use area heuristic for the DeepPoly ReLU approximation')
 parser.add_argument('--relation_diagram', type=str, default=None, help='Path to the hasse diagram of variables constraintables in the output layer')
 parser.add_argument('--input', type=str, default=None, help='Path to the input of the network')
+parser.add_argument('--input_folder', type=str, default=None, help='Path to the batch input folder')
 
 args = parser.parse_args()
 
@@ -181,8 +182,17 @@ def denormalize(image, means, stds):
                 image[i+2048] = tmp[count]
                 count = count+1
         
-
-if(args.input):
+if(args.input_folder):
+    tests = []
+    for root,dirs,files in os.walk(args.input_folder):
+        for name in files:
+            if name.endswith('.in'):
+                file = open(os.path.join(root,name),"r")
+                raw = file.read().strip().replace("\n"," ").split(" ")
+                test = [0] + [int(i) for i in raw]
+                tests.append(test)
+                
+elif(args.input):
     raw = open(args.input, 'r').read().strip().replace("\n"," ").split(" ")
     test = [0] + [int(i) for i in raw]
     tests = [test]
@@ -256,7 +266,7 @@ if dataset=='acasxu':
 
 else:
     for test in tests:
-        print(test)
+        # print(test)
         if(dataset=='mnist'):
             image= np.float64(test[1:len(test)])/np.float64(255)
         else:
