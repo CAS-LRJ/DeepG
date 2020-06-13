@@ -28,9 +28,9 @@ class hasse:
     def dumpJSON(num,e):
         obj = {
             "graph": {
-                "number_of_nodes": num,
-                "names" : [i for i in range(num)],
-                "edges" : [{"from":u, "to":v} for (u,v) in e]
+                "number_of_nodes": str(num),
+                "names" : ["OutX"+str(i) for i in range(num)],
+                "edges" : [{"from":str(u), "to":str(v)} for (u,v) in e]
             } 
         }
         return json.dumps(obj)
