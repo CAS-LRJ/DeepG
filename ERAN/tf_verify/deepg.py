@@ -385,6 +385,7 @@ def main():
         print('[Box]  Average chunks verified: %.2f percent' % (100.0*np.mean(cver_box)))
         print('[Poly]  Average chunks verified: %.2f percent' % (100.0*np.mean(cver_poly)))
         print('Average time: ', tot_time/total)
+        print('Verified:%d Box Robust:%d Poly Robust:%d Box Robust Percentage:%.2f Poly Robust Percentage:%.2f' % (total,correct_box,correct_poly,100.0*correct_box/total,100.0*correct_poly/total))
 
         
 if __name__ == '__main__':
