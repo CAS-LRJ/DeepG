@@ -5,7 +5,7 @@ tar -xvzf m4-1.4.1.tar.gz
 cd m4-1.4.1
 ./configure
 make
-make install
+sudo make install
 cp src/m4 /usr/bin
 cd ..
 rm m4-1.4.1.tar.gz
@@ -17,7 +17,7 @@ tar -xvf gmp-6.1.2.tar.xz
 cd gmp-6.1.2
 ./configure --enable-cxx
 make
-make install
+sudo make install
 cd ..
 rm gmp-6.1.2.tar.xz
 
@@ -28,7 +28,7 @@ tar -xvf mpfr-4.0.2.tar.xz
 cd mpfr-4.0.2
 ./configure
 make
-make install
+sudo make install
 cd ..
 rm mpfr-4.0.2.tar.xz
 
@@ -39,12 +39,12 @@ cd ELINA
 git checkout fe565031
 ./configure
 make
-make install
+sudo make install
 cd ..
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/lib
 
-ldconfig
+sudo ldconfig
 
 
 
