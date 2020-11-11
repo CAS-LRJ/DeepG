@@ -11,7 +11,7 @@ The system is developed at the [SRI Lab, Department of Computer Science, ETH Zur
 Clone this repository:
 
 ```bash
-$ git clone https://github.com/eth-sri/deepg
+$ git clone https://github.com/ISCAS-PMC/deepg.git
 ```
 
 Download Gurobi, update environment variables and install C++ bindings:
