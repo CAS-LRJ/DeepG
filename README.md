@@ -17,15 +17,15 @@ $ git clone https://github.com/ISCAS-PMC/deepg.git
 Download Gurobi, update environment variables and install C++ bindings:
 
 ```bash
-$ wget https://packages.gurobi.com/8.1/gurobi8.1.1_linux64.tar.gz
-$ tar -xzvf gurobi8.1.1_linux64.tar.gz
-$ export GUROBI_HOME="$(pwd)/gurobi811/linux64"
+$ wget https://packages.gurobi.com/9.0/gurobi9.0.0_linux64.tar.gz
+$ tar -xzvf gurobi9.0.0_linux64.tar.gz
+$ export GUROBI_HOME="$(pwd)/gurobi900/linux64"
 $ export PATH="${PATH}:${GUROBI_HOME}/bin"
 $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:${GUROBI_HOME}/lib
-$ cd gurobi811/linux64/src/build
+$ cd gurobi900/linux64/src/build
 $ make
 $ cp libgurobi_c++.a ../../lib/
-$ sudo cp ../../lib/libgurobi81.so /usr/lib
+$ sudo cp ../../lib/libgurobi90.so /usr/lib
 $ cd ../../../../
 ```
 
@@ -42,7 +42,7 @@ Next, create a virtual environment, install Gurobi Python bindings and other req
 ```bash
 $ virtualenv venv
 $ source venv/bin/activate
-$ (venv) cd ../../gurobi811/linux64
+$ (venv) cd ../../gurobi900/linux64
 $ (venv) python setup.py install
 ```
 Next, we install ERAN. Note that this is a fork of official [ERAN](https://github.com/eth-sri/eran/) analyzer.
